@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
 
 class Main {
 
@@ -15,7 +16,7 @@ class Main {
         randomGeneratedValuesForEachBitLength = new ArrayList<>();
     }
 
-    void run() {
+    void run() throws ExecutionException, InterruptedException {
         System.out.println("Printing number of combinations for each bit length");
         for (int bitLength : bitLengths) {
             System.out.println(bitLength + ": " + getNumberOfCombinations(bitLength));
@@ -29,34 +30,13 @@ class Main {
 
         System.out.println("Guessing");
         for (BigInteger randomlyGenerated : randomGeneratedValuesForEachBitLength) {
-            bruteForce(randomlyGenerated);
+            new Bruter(randomlyGenerated).bruteForce();
         }
 
     }
 
-    private BigInteger getNumberOfCombinations(int bitSequenceLength) {
+    static BigInteger getNumberOfCombinations(int bitSequenceLength) {
         return BigInteger.TWO.pow(bitSequenceLength);
-    }
-
-    private void bruteForce(BigInteger actualNumber) {
-        int bitLength = actualNumber.bitLength();
-        BigInteger upperBound = getMaxForBitLength(bitLength);
-        long start = System.currentTimeMillis();
-        for (
-            BigInteger currentNumber = BigInteger.ZERO;
-            currentNumber.compareTo(upperBound) <= 0;
-            currentNumber = currentNumber.add(BigInteger.ONE)
-        ) {
-            if (currentNumber.equals(actualNumber)) {
-                long finish = System.currentTimeMillis();
-                long duration = finish - start;
-                System.out.println("Guessed number of bit length: " + bitLength + " in " + duration + " ms");
-            }
-        }
-    }
-
-    private BigInteger getMaxForBitLength(int bitLength) {
-        return BigInteger.ZERO.setBit(bitLength).subtract(BigInteger.ONE);
     }
 
 }
